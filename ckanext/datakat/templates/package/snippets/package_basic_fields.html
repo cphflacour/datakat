@@ -1,0 +1,166 @@
+{% import 'macros/form.html' as form %}
+
+<style>
+#field-author, #field-maintainer, #field-bydata { display:inline; margin-right:45px; }
+fieldset {
+    display: block;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 10px;
+    padding-top: 0.35em;
+    padding-bottom: 0.625em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    border: 2px #cccccc groove;
+
+}
+legend {
+    display: block;
+    padding-left: 2px;
+    padding-right: 2px;
+    border: none;
+	width: inherit;
+	margin-bottom: inherit;
+	font-size: 18px;
+	color: #333333;
+}
+
+</style>
+<fieldset>
+<legend>Beskrivende oplysninger</legend>
+{% block package_basic_fields_title %}
+{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
+{% endblock %}
+
+{% block package_basic_fields_url %}
+{% set prefix = h.url_for(controller='package', action='read', id='') %}
+{% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
+{% set domain = domain|replace("http://", "")|replace("https://", "") %}
+{% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>', 'class': 'form-control input-sm'} %}
+
+{{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
+{% endblock %}
+
+{% block package_basic_fields_description %}
+{{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes) }}
+{% endblock %}
+
+{% block package_basic_fields_tags %}
+{% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
+{{ form.input('tag_string', id='field-tags', label=_('Emneord'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) }}
+{% endblock %}
+
+
+{% block package_basic_fields_custom %}
+{{ form.select('datatype_text', label=_('Datatype'), options=[{'value':'Åbne data', 'name': 1},{'value':'Interne data', 'name': 2},{'value':'Personfølsomme data', 'name':3},{'value':'Værdidata', 'name':4}], selected=data.datatype_text, error=errors.year, classes=['control-medium']) }}
+{% endblock %}
+
+{% block package_basic_fields_org %}
+  {# if we have a default group then this wants remembering #}
+  {% if data.group_id %}
+    <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
+  {% endif %}
+
+  {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
+  {% set dataset_has_organization = data.owner_org or data.group_id %}
+  {% set organizations_available = h.organizations_available('create_dataset') %}
+  {% set user_is_sysadmin = h.check_access('sysadmin') %}
+  {% set show_organizations_selector = organizations_available %}
+  {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
+
+  {% if show_organizations_selector and show_visibility_selector %}
+    <div data-module="dataset-visibility">
+  {% endif %}
+
+  {% if show_visibility_selector %}
+    {% block package_metadata_fields_visibility %}
+      <div class="form-group control-medium">
+        <label for="field-private" class="control-label">{{ _('Visibility') }}</label>
+        <div class="controls">
+          <select id="field-private" name="private" class="form-control">
+            {% for option in [('True', _('Private')), ('False', _('Public'))] %}
+            <option value="{{ option[0] }}" {% if option[0] == data.private|trim %}selected="selected"{% endif %}>{{ option[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    {% endblock %}
+  {% endif %}
+
+  {% if show_organizations_selector and show_visibility_selector %}
+    </div>
+  {% endif %}
+</fieldset>
+
+<fieldset>
+<legend>Forankring og ejerskab</legend>
+
+{% if show_organizations_selector %}
+{% set existing_org = data.owner_org or data.group_id %}
+<div class="form-group control-medium">
+  <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
+  <div class="controls">
+    <select id="field-organizations" name="owner_org" data-module="autocomplete">
+      {% if h.check_config_permission('create_unowned_dataset') %}
+      <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
+      {% endif %}
+      {% for organization in organizations_available %}
+      {# get out first org from users list only if there is not an existing org #}
+      {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
+      <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.display_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+{% endif %}
+
+{% block package_metadata_fields %}
+<div class="form-group control-medium">
+    <label class="control-label" for="field-maintainer">Faglig kontakt</label>
+    <div class="controls">
+        <input id="field-maintainer" name="maintainer" value="{{ data.maintainer }}" placeholder="Navn" type="text">
+        <input id="field-maintainer-email" name="maintainer_email" value="{{ data.maintainer_email }}" placeholder="e-mail" type="text">
+    </div>
+</div>
+<div class="form-group control-medium">
+    <label class="control-label" for="field-bydata">Teknisk kontakt</label>
+    <div class="controls">
+        <input id="field-bydata" name="bydata" value="{{ data.bydata }}" placeholder="Navn" type="text">
+        <input id="field-bydata-email" name="bydata_email" value="{{ data.bydata_email }}" placeholder="e-mail" type="text">
+    </div>
+</div>
+</fieldset>
+{% endblock %}
+
+
+  {% if data.id and h.check_access('package_delete', {'id': data.id}) and data.state != 'active' %}
+    <div class="form-group control-medium">
+      <label for="field-state" class="control-label">{{ _('State') }}</label>
+      <div class="controls">
+        <select id="field-state" name="state">
+          <option value="active" {% if data.get('state', 'none') == 'active' %} selected="selected" {% endif %}>{{ _('Active') }}</option>
+          <option value="deleted" {% if data.get('state', 'none') == 'deleted' %} selected="selected" {% endif %}>{{ _('Deleted') }}</option>
+        </select>
+      </div>
+    </div>
+  {% endif %}
+
+{% block package_metadata_fields_opdatering %}
+    <fieldset>
+     <legend>Datakvalitet</legend>
+{{ form.input('senest_opdateret_dato', label=_('Opdateret dato'), id='field-senest-opdateret-dato', placeholder=_('Juni 2017, 12-02-2016'), value=data.senest_opdateret_dato, error=errors.senest_opdateret_dato, classes=['control-medium']) }}
+{{ form.select('opdateringsfrekvens_text', label=_('Opdaterings-frekvens'), options=[{'value':'Ofte', 'name': 1},{'value': 'Regelmæssigt', 'name': 2},{'value': 'Uregelmæssigt', 'name':3},{'value': 'Sjældent', 'name':4}], selected=data.opdateringsfrekvens_text, error=errors.year, classes=['control-medium']) }}
+{{ form.markdown('kvalitetsvurdering_text', label=_('Kvalitets-vurdering'), id='field-kvalitetsvurdering-text', placeholder=_('Vurder kvaliteten af dette datasæt.'), value=data.kvalitetsvurdering_text, error=errors.kvalitetsvurdering_text, classes=['control-full']) }}
+    </fieldset>
+{% endblock %}
+
+{% if user_is_sysadmin %}
+{% block package_metadata_fields_kgbintegration %}
+    <fieldset>
+    <legend>KGB Integration</legend>
+    {{ form.input('kgb_key', label=_('KGB key'), id='field-kgb_key', placeholder=_('NNNNNNNNNNN'), value=data.kgb_key, error=errors.kgb_key, classes=['control-medium']) }}
+    </fieldset>
+{% endblock %}
+{% endif %}
+
+{% endblock %}

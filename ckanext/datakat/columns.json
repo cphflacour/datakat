@@ -1,0 +1,41 @@
+{
+	"Titel": {
+		"pattern_path": "^title$"
+	},
+	"Navn": {
+		"pattern_path": "^name$"
+	},
+	"Link": {
+		"pattern_path": "^link$"
+	},
+	"Beskrivelse": {
+		"pattern_path": "^notes$"
+	},
+	"Emneord": {
+		"pattern_path": "^tags$"
+	},
+	"Synligt": {
+		"pattern_path": "^private$"
+	},
+	"Organisation": {
+		"pattern_path": "^organization$"
+	},
+	"Datatype": {
+		"pattern_path": "^datatype_text$"
+	},
+	"Faglig kontakt": {
+		"pattern_path": "^maintainer$"
+	},
+	"Teknisk kontakt": {
+		"pattern_path": "^bydata$"
+	},
+	"Senest opdateret": {
+		"pattern_path": "^senest_opdateret_dato$"
+	},
+	"Kvalitetsvurdering": {
+		"pattern_path": "^kvalitetsvurdering_text$"
+	},
+	"Opdateringsfrekvens": {
+		"pattern_path": "^opdateringsfrekvens_text$"
+	}
+}

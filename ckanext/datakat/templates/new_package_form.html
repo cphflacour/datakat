@@ -1,0 +1,18 @@
+{% extends 'package/snippets/package_form.html' %}
+
+{% set form_style = c.form_style or c.action %}
+
+{% block stages %}
+  {# Only one stage for now...#}
+  {#% if form_style != 'edit' %}
+    {{ super() }}
+  {% endif %#}
+{% endblock %}
+
+
+{% block cancel_button %}
+  {% if form_style != 'edit' %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
