@@ -1585,7 +1585,7 @@ msgstr[1] "over {years} år siden"
 
 #: ckan/lib/formatters.py:146
 msgid "{month} {day}, {year}, {hour:02}:{min:02} ({timezone})"
-msgstr ""
+msgstr "{day}-{month}-{year}, {hour:02}:{min:02}"
 
 #: ckan/lib/formatters.py:151
 msgid "{month} {day}, {year}"
