@@ -81,7 +81,11 @@
   {% trans %}
     <p class="extra">Please try another search.</p>
   {% endtrans %}
-<a class="btn btn-default" href="mailto:fg2v@kk.dk?subject=Manglende datasæt. Søgning: {{ query }}" >Send gerne besked om manglende datasæt</a>
+    <a class="btn btn-default" href="mailto:fg2v@kk.dk?subject=Datakat: Manglende datasæt. Søgning: {{ query }}" >
+        <i class="fa fa-envelope-o">
+        </i>
+        Kontakt bydata om manglende datasæt
+    </a>
   {% endif %}
 
 {% if error %}

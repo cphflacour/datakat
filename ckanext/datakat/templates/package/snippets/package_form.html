@@ -8,10 +8,10 @@ then itself be extended to add/remove blocks of functionality. #}
     {# Remove stages #}
     {# { h.snippet('package/snippets/stages.html', stages=stage) } #}
   {% endblock %}
-<!--
+
   {# If we remove _ckan_phase we avoid new resource page #}
   <input type="hidden" name="_ckan_phase" value="dataset_new_1" />
--->
+  
   {# pkg_name used in 3 stage edit #}
   <input type="hidden" name="pkg_name" value="{{ data.id }}" />
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
@@ -46,7 +46,7 @@ then itself be extended to add/remove blocks of functionality. #}
 
       {% block save_button %}
       {% if form_style == 'new' or form_style == 'edit' %}
-        <button class="btn btn-primary" type="submit" name="save" value="">{% block finish_button_text %}{{_('Save') }}{% endblock %}</button>
+        <button class="btn btn-primary" type="submit" name="save" value="go-dataset-complete">{% block finish_button_text %}{{_('Save') }}{% endblock %}</button>
       {% endif %}
 <!--
       <button class="btn btn-primary" type="submit" name="save" value="go-metadata">{% block save_button_text %}{{ _('Next: Add Data 2') }}{% endblock %}</button>
