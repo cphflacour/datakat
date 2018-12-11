@@ -10,8 +10,9 @@ then itself be extended to add/remove blocks of functionality. #}
   {% endblock %}
 
   {# If we remove _ckan_phase we avoid new resource page #}
-  <input type="hidden" name="_ckan_phase" value="dataset_new_1" />
-  
+    {% if form_style == 'edit' %} 
+        <input type="hidden" name="_ckan_phase" value="dataset_new_1" />
+    {% endif %}
   {# pkg_name used in 3 stage edit #}
   <input type="hidden" name="pkg_name" value="{{ data.id }}" />
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
